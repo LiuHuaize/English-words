@@ -14,34 +14,69 @@ struct LoginView: View {
     @State private var isPasswordVisible: Bool = false
     @State private var showRegisterView: Bool = false
     
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
+    
+    private var maxContentWidth: CGFloat {
+        isIPad ? 600 : 380
+    }
+    
+    private var animationSize: CGFloat {
+        isIPad ? 350 : 200
+    }
+    
+    private var animationScale: CGFloat {
+        isIPad ? 0.8 : 0.6
+    }
+    
+    private var titleFontSize: CGFloat {
+        isIPad ? 48 : 36
+    }
+    
+    private var subtitleFontSize: CGFloat {
+        isIPad ? 18 : 14
+    }
+    
+    private var topPadding: CGFloat {
+        isIPad ? 100 : 50
+    }
+    
     var body: some View {
         ZStack {
             GradientBackground()
             
-            ScrollView {
-                VStack(spacing: 0) {
-                    headerSection
-                    
-                    // 使用固定高度的容器包裹动画，防止缩放影响布局
-                    ZStack {
-                        Color.clear
-                            .frame(height: 130) // 调整容器高度以适应更小的动画
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(spacing: 0) {
+                        headerSection
                         
-                        animationSection
+                        // 动态调整动画容器高度
+                        ZStack {
+                            Color.clear
+                                .frame(height: animationSize * animationScale * 1.1)
+                            
+                            animationSection
+                        }
+                        
+                        VStack(spacing: isIPad ? 35 : 25) {
+                            inputSection
+                            loginButton
+                            registerLink
+                        }
+                        .frame(maxWidth: maxContentWidth)
+                        .padding(.horizontal, isIPad ? 40 : 24)
+                        .padding(.top, isIPad ? 30 : 20)
+                        
+                        Spacer(minLength: isIPad ? 60 : 40)
+                        
+                        agreementSection
                     }
-                    
-                    VStack(spacing: 25) {
-                        inputSection
-                        loginButton
-                        registerLink
-                    }
-                    .frame(maxWidth: 380)
-                    .padding(.horizontal, 24)
-                    .padding(.top, 20) // 添加顶部间距
-                    
-                    Spacer(minLength: 40)
-                    
-                    agreementSection
+                    .frame(minHeight: geometry.size.height)
+                    .frame(maxWidth: .infinity)
                 }
             }
         }
@@ -54,29 +89,29 @@ struct LoginView: View {
     }
     
     private var headerSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: isIPad ? 12 : 8) {
             Text(AppStrings.General.appTitle)
-                .font(.system(size: 36, weight: .bold, design: .rounded))
+                .font(.system(size: titleFontSize, weight: .bold, design: .rounded))
                 .foregroundColor(AppColors.primary)
                 .shadow(color: AppColors.primary.opacity(0.2), radius: 2, x: 0, y: 2)
             
             Text(AppStrings.General.appSubtitle)
-                .font(.system(size: 14, weight: .medium))
+                .font(.system(size: subtitleFontSize, weight: .medium))
                 .foregroundColor(AppColors.textSecondary)
                 .opacity(0.8)
         }
-        .padding(.top, 50)
-        .padding(.bottom, 30)
+        .padding(.top, topPadding)
+        .padding(.bottom, isIPad ? 40 : 30)
     }
     
     private var animationSection: some View {
         LottieView(animation: .girlStudyingOnLaptop)
-            .frame(width: 200, height: 200) // 保持原始尺寸用于布局
-            .scaleEffect(0.6) // 缩小到60%，更小巧精致
+            .frame(width: animationSize, height: animationSize)
+            .scaleEffect(animationScale)
     }
     
     private var inputSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: isIPad ? 20 : 16) {
             CustomTextField(
                 icon: "person.fill",
                 placeholder: AppStrings.Login.usernamePlaceholder,
@@ -108,54 +143,54 @@ struct LoginView: View {
         HStack(spacing: 4) {
             Text(AppStrings.Login.noAccount)
                 .foregroundColor(AppColors.textSecondary.opacity(0.8))
-                .font(.system(size: 14))
+                .font(.system(size: isIPad ? 16 : 14))
             
             Button(action: {
                 showRegisterView = true
             }) {
                 Text(AppStrings.Login.register)
                     .foregroundColor(AppColors.primary)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: isIPad ? 16 : 14, weight: .semibold))
                     .underline()
             }
         }
-        .padding(.top, 5)
+        .padding(.top, isIPad ? 8 : 5)
     }
     
     private var agreementSection: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 6) {
+        VStack(spacing: isIPad ? 16 : 12) {
+            HStack(spacing: isIPad ? 8 : 6) {
                 agreementCheckbox
                 
                 Text(AppStrings.Login.agreementPrefix)
-                    .font(.system(size: 12))
+                    .font(.system(size: isIPad ? 14 : 12))
                     .foregroundColor(AppColors.textSecondary.opacity(0.7))
                 
                 Button(action: openUserAgreement) {
                     Text(AppStrings.Login.userAgreement)
-                        .font(.system(size: 12))
+                        .font(.system(size: isIPad ? 14 : 12))
                         .foregroundColor(AppColors.primary)
                 }
                 
                 Text(AppStrings.Login.and)
-                    .font(.system(size: 12))
+                    .font(.system(size: isIPad ? 14 : 12))
                     .foregroundColor(AppColors.textSecondary.opacity(0.7))
                 
                 Button(action: openPrivacyPolicy) {
                     Text(AppStrings.Login.privacyPolicy)
-                        .font(.system(size: 12))
+                        .font(.system(size: isIPad ? 14 : 12))
                         .foregroundColor(AppColors.primary)
                 }
             }
             
             if !isAgreed {
                 Text(AppStrings.Login.agreementReminder)
-                    .font(.system(size: 11))
+                    .font(.system(size: isIPad ? 13 : 11))
                     .foregroundColor(AppColors.accent)
                     .transition(.opacity)
             }
         }
-        .padding(.bottom, 30)
+        .padding(.bottom, isIPad ? 50 : 30)
         .animation(.easeInOut, value: isAgreed)
     }
     
@@ -168,7 +203,7 @@ struct LoginView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 4)
                     .fill(isAgreed ? AppColors.primary : Color.clear)
-                    .frame(width: 20, height: 20)
+                    .frame(width: isIPad ? 24 : 20, height: isIPad ? 24 : 20)
                     .overlay(
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(isAgreed ? AppColors.primary : AppColors.borderLight, lineWidth: 1.5)
@@ -176,7 +211,7 @@ struct LoginView: View {
                 
                 if isAgreed {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: isIPad ? 14 : 12, weight: .bold))
                         .foregroundColor(.white)
                 }
             }

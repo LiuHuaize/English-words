@@ -15,6 +15,13 @@ struct CustomTextField: View {
     var showToggleButton: Bool = false
     @Binding var isSecureVisible: Bool
     
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
+    
     init(icon: String, placeholder: String, text: Binding<String>) {
         self.icon = icon
         self.placeholder = placeholder
@@ -34,19 +41,19 @@ struct CustomTextField: View {
     }
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: isIPad ? 16 : 12) {
             Image(systemName: icon)
                 .foregroundColor(AppColors.primary.opacity(0.7))
-                .font(.system(size: 18))
-                .frame(width: 20)
+                .font(.system(size: isIPad ? 22 : 18))
+                .frame(width: isIPad ? 24 : 20)
             
             if isSecure && !isSecureVisible {
                 SecureField(placeholder, text: $text)
-                    .font(.system(size: 16))
+                    .font(.system(size: isIPad ? 18 : 16))
                     .foregroundColor(.primary)
             } else {
                 TextField(placeholder, text: $text)
-                    .font(.system(size: 16))
+                    .font(.system(size: isIPad ? 18 : 16))
                     .foregroundColor(.primary)
             }
             
@@ -57,7 +64,7 @@ struct CustomTextField: View {
                     }) {
                         Image(systemName: isSecureVisible ? "eye.slash.fill" : "eye.fill")
                             .foregroundColor(Color.gray.opacity(0.5))
-                            .font(.system(size: 16))
+                            .font(.system(size: isIPad ? 18 : 16))
                     }
                 } else {
                     Button(action: {
@@ -65,21 +72,21 @@ struct CustomTextField: View {
                     }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(Color.gray.opacity(0.5))
-                            .font(.system(size: 16))
+                            .font(.system(size: isIPad ? 18 : 16))
                     }
                 }
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.horizontal, isIPad ? 20 : 16)
+        .padding(.vertical, isIPad ? 18 : 14)
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: isIPad ? 14 : 12)
                 .fill(Color.white)
-                .shadow(color: AppColors.shadowLight, radius: 8, x: 0, y: 4)
+                .shadow(color: AppColors.shadowLight, radius: isIPad ? 10 : 8, x: 0, y: 4)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(text.isEmpty ? Color.clear : AppColors.borderFocused, lineWidth: 1)
+            RoundedRectangle(cornerRadius: isIPad ? 14 : 12)
+                .stroke(text.isEmpty ? Color.clear : AppColors.borderFocused, lineWidth: isIPad ? 1.5 : 1)
         )
     }
 }

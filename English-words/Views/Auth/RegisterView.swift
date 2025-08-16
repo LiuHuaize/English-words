@@ -20,6 +20,17 @@ struct RegisterView: View {
     @State private var showStatusMessage: Bool = false
     @State private var isStatusSuccess: Bool = false
     
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
+    
+    private var maxContentWidth: CGFloat {
+        isIPad ? 600 : 380
+    }
+    
     var passwordsMatch: Bool {
         !password.isEmpty && !confirmPassword.isEmpty && password == confirmPassword
     }
@@ -40,14 +51,14 @@ struct RegisterView: View {
                 GradientBackground()
                 
                 ScrollView {
-                    VStack(spacing: 25) {
+                    VStack(spacing: isIPad ? 30 : 25) {
                         headerSection
                         
                         // 统一的状态提示信息
                         if showStatusMessage {
                             HStack(spacing: 8) {
                                 Image(systemName: isStatusSuccess ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                                    .font(.system(size: 14))
+                                    .font(.system(size: isIPad ? 16 : 14))
                                 Text(statusMessage)
                                     .font(.system(size: 14, weight: .medium))
                             }
@@ -66,8 +77,8 @@ struct RegisterView: View {
                         registerButton
                         loginLink
                     }
-                    .padding(.horizontal, 20)
-                    .frame(maxWidth: 380)
+                    .padding(.horizontal, isIPad ? 40 : 20)
+                    .frame(maxWidth: maxContentWidth)
                 }
             }
             .navigationBarItems(
@@ -77,27 +88,27 @@ struct RegisterView: View {
     }
     
     private var headerSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: isIPad ? 12 : 8) {
             Image(systemName: "person.badge.plus.fill")
-                .font(.system(size: 60))
+                .font(.system(size: isIPad ? 80 : 60))
                 .foregroundColor(AppColors.primary)
-                .padding(.top, 20)
+                .padding(.top, isIPad ? 30 : 20)
             
             Text(AppStrings.Register.title)
-                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .font(.system(size: isIPad ? 36 : 28, weight: .bold, design: .rounded))
                 .foregroundColor(AppColors.primary)
             
             Text(AppStrings.Register.subtitle)
-                .font(.system(size: 14, weight: .medium))
+                .font(.system(size: isIPad ? 18 : 14, weight: .medium))
                 .foregroundColor(AppColors.textSecondary)
                 .opacity(0.8)
         }
-        .padding(.top, 20)
-        .padding(.bottom, 20)
+        .padding(.top, isIPad ? 30 : 20)
+        .padding(.bottom, isIPad ? 30 : 20)
     }
     
     private var inputSection: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: isIPad ? 24 : 20) {
             CustomTextField(
                 icon: "person.fill",
                 placeholder: AppStrings.Register.usernamePlaceholder,

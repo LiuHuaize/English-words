@@ -14,6 +14,13 @@ struct GradientButton: View {
     let isEnabled: Bool
     let isLoading: Bool
     
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
+    
     init(title: String, icon: String? = nil, isEnabled: Bool = true, isLoading: Bool = false, action: @escaping () -> Void) {
         self.title = title
         self.icon = icon
@@ -34,21 +41,21 @@ struct GradientButton: View {
                 if isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(0.8)
+                        .scaleEffect(isIPad ? 1.0 : 0.8)
                 } else {
                     Text(title)
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.system(size: isIPad ? 20 : 17, weight: .semibold))
                         .foregroundColor(.white)
                     
                     if let icon = icon {
                         Image(systemName: icon)
-                            .font(.system(size: 18))
+                            .font(.system(size: isIPad ? 22 : 18))
                             .foregroundColor(.white.opacity(0.9))
                     }
                 }
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 52)
+            .frame(height: isIPad ? 60 : 52)
             .background(
                 LinearGradient(
                     gradient: Gradient(colors: [AppColors.primary, AppColors.secondary]),
@@ -56,8 +63,8 @@ struct GradientButton: View {
                     endPoint: .trailing
                 )
             )
-            .cornerRadius(12)
-            .shadow(color: AppColors.primary.opacity(0.3), radius: 12, x: 0, y: 6)
+            .cornerRadius(isIPad ? 14 : 12)
+            .shadow(color: AppColors.primary.opacity(0.3), radius: isIPad ? 14 : 12, x: 0, y: 6)
         }
         .scaleEffect(isEnabled ? 1.0 : 0.97)
         .animation(.spring(response: 0.3), value: isEnabled)
