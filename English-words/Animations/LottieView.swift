@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 import Lottie
 
 // 通用的 Lottie 动画视图
@@ -105,20 +104,21 @@ extension View {
 }
 
 // 预览
+#if DEBUG
 struct LottieView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
-            LottieView(animation: .girlStudyingOnLaptop)
+            // 简单的预览占位符，避免预览时的编译问题
+            Text("Lottie Animation Preview")
+                .font(.title2)
+                .foregroundColor(.gray)
             
-            LottieView(
-                animation: .loadingAnimation,
-                configuration: AnimationConfiguration(
-                    loopMode: .loop,
-                    animationSpeed: 2.0,
-                    contentMode: .scaleAspectFit
-                )
-            )
+            Text("Girl Studying Animation")
+                .frame(width: 200, height: 200)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(10)
         }
         .padding()
     }
 }
+#endif
