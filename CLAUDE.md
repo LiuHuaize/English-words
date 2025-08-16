@@ -93,6 +93,14 @@ xcodebuild test -scheme English-words -destination 'platform=iOS Simulator,name=
 
 ## 开发注意事项
 
+### SwiftUI 框架导入规则
+- **纯 SwiftUI 项目**: 不需要显式导入 `UIKit`，SwiftUI 框架已包含必要的 UIKit 组件
+- **UIViewRepresentable 使用**: 
+  - 使用 `Context` 而非 `UIViewRepresentableContext<T>`（iOS 13+ 简化语法）
+  - 示例：`func makeUIView(context: Context) -> UIView`
+- **键盘隐藏处理**: 避免直接使用 `UIApplication.shared`，优先使用 SwiftUI 原生方法
+- **Lottie 集成**: 仅需导入 `import SwiftUI` 和 `import Lottie`，无需额外导入 UIKit
+
 ### SwiftUI 状态管理模式
 - **局部状态**: 使用 `@State` 管理视图内部状态
 - **数据传递**: 使用 `@Binding` 在父子视图间双向绑定
@@ -128,6 +136,37 @@ xcodebuild test -scheme English-words -destination 'platform=iOS Simulator,name=
 ### 项目依赖管理
 - 当前通过 Swift Package Manager 管理 Lottie
 - 添加新依赖时使用 Xcode 的 Package Dependencies 界面
+
+## 常见编译错误及解决方案
+
+### 1. "No such module 'UIKit'"
+**错误原因**: 在纯 SwiftUI 项目中显式导入 UIKit
+**解决方案**: 移除 `import UIKit`，仅保留 `import SwiftUI`
+
+### 2. "Cannot find type 'UIViewRepresentableContext' in scope"
+**错误原因**: 使用了旧版本的 UIViewRepresentable 语法
+**解决方案**: 
+```swift
+// ❌ 错误写法
+func makeUIView(context: UIViewRepresentableContext<MyView>) -> UIView
+
+// ✅ 正确写法
+func makeUIView(context: Context) -> UIView
+```
+
+### 3. "Missing package product 'Lottie'"
+**错误原因**: Lottie 包依赖未正确安装或解析
+**解决方案**:
+1. 清理构建缓存：`xcodebuild -scheme English-words clean`
+2. 解析包依赖：`xcodebuild -resolvePackageDependencies -scheme English-words`
+3. 如果问题持续，在 Xcode 中重新添加 Lottie 包
+
+### 4. 模拟器安装失败："Failed to set localization dictionary"
+**错误原因**: 模拟器缓存或配置问题
+**解决方案**:
+1. 清理项目：`mcp__XcodeBuildMCP__clean_proj`
+2. 重新构建：`mcp__XcodeBuildMCP__build_sim_name_proj`
+3. 如果问题持续，尝试使用不同的模拟器或重启模拟器
 
 ## 数据库架构
 

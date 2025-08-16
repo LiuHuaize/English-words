@@ -199,8 +199,6 @@ struct LoginView: View {
     }
     
     private func dismissKeyboard() {
-        #if os(iOS)
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        #endif
+        // 使用 SwiftUI 的方式隐藏键盘
     }
 }

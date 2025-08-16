@@ -39,7 +39,7 @@ struct LottieAnimationViewRepresentable: UIViewRepresentable {
     let animation: LottieAnimation
     let configuration: AnimationConfiguration
     
-    func makeUIView(context: UIViewRepresentableContext<LottieAnimationViewRepresentable>) -> LottieAnimationView {
+    func makeUIView(context: Context) -> LottieAnimationView {
         let animationView = LottieAnimationView()
         
         // 从文件路径加载动画
@@ -83,7 +83,7 @@ struct LottieAnimationViewRepresentable: UIViewRepresentable {
         return animationView
     }
     
-    func updateUIView(_ uiView: LottieAnimationView, context: UIViewRepresentableContext<LottieAnimationViewRepresentable>) {
+    func updateUIView(_ uiView: LottieAnimationView, context: Context) {
         // 如果需要，可以在这里更新动画状态
     }
 }

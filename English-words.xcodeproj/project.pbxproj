@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		561350262E507013006A78DC /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 561350252E507013006A78DC /* Lottie */; };
+		561350522E50A897006A78DC /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 561350512E50A897006A78DC /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,7 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				561350262E507013006A78DC /* Lottie in Frameworks */,
+				561350522E50A897006A78DC /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,7 +139,7 @@
 			);
 			name = "English-words";
 			packageProductDependencies = (
-				561350252E507013006A78DC /* Lottie */,
+				561350512E50A897006A78DC /* Lottie */,
 			);
 			productName = "English-words";
 			productReference = 5613B4A72E504F5D0065549D /* English-words.app */;
@@ -224,7 +224,7 @@
 			mainGroup = 5613B49E2E504F5D0065549D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				561350232E506F2F006A78DC /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				561350502E50A890006A78DC /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5613B4A82E504F5D0065549D /* Products */;
@@ -626,7 +626,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		561350232E506F2F006A78DC /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+		561350502E50A890006A78DC /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios";
 			requirement = {
@@ -637,9 +637,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		561350252E507013006A78DC /* Lottie */ = {
+		561350512E50A897006A78DC /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 561350232E506F2F006A78DC /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			package = 561350502E50A890006A78DC /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */

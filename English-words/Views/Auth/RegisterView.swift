@@ -15,9 +15,10 @@ struct RegisterView: View {
     @State private var confirmPassword: String = ""
     @State private var isPasswordVisible: Bool = false
     @State private var isConfirmPasswordVisible: Bool = false
-    @State private var showPasswordMismatchError: Bool = false
-    @State private var showEmptyFieldError: Bool = false
     @State private var isRegistering: Bool = false
+    @State private var statusMessage: String = ""
+    @State private var showStatusMessage: Bool = false
+    @State private var isStatusSuccess: Bool = false
     
     var passwordsMatch: Bool {
         !password.isEmpty && !confirmPassword.isEmpty && password == confirmPassword
@@ -41,14 +42,29 @@ struct RegisterView: View {
                 ScrollView {
                     VStack(spacing: 25) {
                         headerSection
+                        
+                        // 统一的状态提示信息
+                        if showStatusMessage {
+                            HStack(spacing: 8) {
+                                Image(systemName: isStatusSuccess ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                                    .font(.system(size: 14))
+                                Text(statusMessage)
+                                    .font(.system(size: 14, weight: .medium))
+                            }
+                            .foregroundColor(isStatusSuccess ? .green : AppColors.accent)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(isStatusSuccess ? Color.green.opacity(0.1) : AppColors.accent.opacity(0.1))
+                            )
+                            .transition(.scale.combined(with: .opacity))
+                        }
+                        
                         inputSection
                         passwordValidation
                         registerButton
                         loginLink
-                        
-                        if showEmptyFieldError {
-                            errorMessage
-                        }
                     }
                     .padding(.horizontal, 20)
                     .frame(maxWidth: 380)
@@ -161,13 +177,6 @@ struct RegisterView: View {
         .padding(.top, 5)
     }
     
-    private var errorMessage: some View {
-        Text(AppStrings.Register.emptyFields)
-            .font(.system(size: 12))
-            .foregroundColor(AppColors.accent)
-            .transition(.opacity)
-    }
-    
     private var closeButton: some View {
         Button(action: {
             isPresented = false
@@ -180,32 +189,59 @@ struct RegisterView: View {
     
     private func handleRegister() {
         guard canRegister else {
-            withAnimation {
-                showEmptyFieldError = true
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                withAnimation {
-                    showEmptyFieldError = false
-                }
-            }
+            showMessage("请填写所有必要的信息", isSuccess: false)
             return
         }
         
         withAnimation {
             isRegistering = true
+            showStatusMessage = false
         }
         
-        // TODO: 实现实际的注册逻辑
-        print("Registering user: \(username)")
-        
-        // 模拟网络请求
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            withAnimation {
-                isRegistering = false
+        Task {
+            do {
+                let user = try await NetworkManager.shared.register(
+                    username: username,
+                    password: password
+                )
+                
+                await MainActor.run {
+                    withAnimation {
+                        isRegistering = false
+                    }
+                    showMessage("注册成功！欢迎加入，\(user.username)！", isSuccess: true)
+                    
+                    // 2秒后关闭注册页面
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        isPresented = false
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    withAnimation {
+                        isRegistering = false
+                    }
+                    
+                    // 显示人性化的错误信息
+                    let errorMessage = error.localizedDescription
+                    showMessage(errorMessage, isSuccess: false)
+                }
             }
-            // 注册成功后关闭页面
-            isPresented = false
+        }
+    }
+    
+    private func showMessage(_ message: String, isSuccess: Bool) {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            statusMessage = message
+            isStatusSuccess = isSuccess
+            showStatusMessage = true
+        }
+        
+        // 5秒后自动隐藏提示信息
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                showStatusMessage = false
+            }
         }
     }
 }
