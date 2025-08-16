@@ -11,13 +11,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **平台**: iOS (SwiftUI)
 - **语言**: Swift
 - **最低部署目标**: iOS 18.5
+- **Xcode项目**: `English-words.xcodeproj`
 - **Xcode Scheme**: English-words
 - **主要依赖**: 
-  - Lottie (通过 Swift Package Manager) - 动画库
+  - Lottie 4.5.2 (通过 Swift Package Manager) - 动画库
 - **架构模式**: SwiftUI 声明式 UI + 组件化设计
 - **数据库**: PostgreSQL
   - 数据库名: `demosql`
   - 本地开发环境使用
+- **后端 API**: 
+  - 本地开发: `http://localhost:3000/api`
+  - 需要运行后端服务支持登录/注册功能
 
 ## 常用开发命令
 
@@ -26,18 +30,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # 构建项目（Debug 模式）
 xcodebuild -scheme English-words -configuration Debug build
 
-# 构建项目（Release 模式）
-xcodebuild -scheme English-words -configuration Release build
-
 # 清理构建缓存
 xcodebuild -scheme English-words clean
 
-# 在 iPhone 16 模拟器构建并运行
-xcodebuild -scheme English-words -destination 'platform=iOS Simulator,name=iPhone 16' build run
+# 使用 MCP 工具在模拟器运行（推荐，自动处理构建和安装）
+mcp__XcodeBuildMCP__build_run_sim_name_proj projectPath=/Users/liuhuaize/Desktop/English-words/English-words.xcodeproj scheme=English-words simulatorName="iPhone 16"
 
-# 使用 MCP 工具在模拟器运行（推荐）
-# 先列出可用模拟器：mcp__XcodeBuildMCP__list_sims
-# 然后构建运行：mcp__XcodeBuildMCP__build_run_sim_name_proj
+# 清理项目（使用 MCP 工具）
+mcp__XcodeBuildMCP__clean_proj projectPath=/Users/liuhuaize/Desktop/English-words/English-words.xcodeproj scheme=English-words
 ```
 
 ### 测试
@@ -50,6 +50,15 @@ xcodebuild test -scheme English-words -destination 'platform=iOS Simulator,name=
 
 # 运行 UI 测试
 xcodebuild test -scheme English-words -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:English-wordsUITests
+```
+
+### 依赖管理
+```bash
+# 解析和更新 Swift Package 依赖
+xcodebuild -resolvePackageDependencies -scheme English-words
+
+# 更新 Lottie 版本（在 Xcode 中操作）
+# File → Add Package Dependencies → 搜索 lottie-ios → 更新版本
 ```
 
 ## 项目架构
@@ -75,6 +84,10 @@ xcodebuild test -scheme English-words -destination 'platform=iOS Simulator,name=
 - **动画系统** (`Animations/`)
   - `LottieView`: Lottie 动画的 SwiftUI 封装
   - `LottieAnimationManager`: 动画资源管理和配置
+
+- **网络层** (`Services/`)
+  - `NetworkManager`: 统一的 API 请求管理，使用 async/await
+  - 支持登录、注册、连接测试等基础功能
 
 **资源管理策略**
 - `AppColors`: 定义所有颜色常量，支持深浅模式
@@ -177,3 +190,33 @@ func makeUIView(context: Context) -> UIView
 - **数据库名**: `demosql`
 - **现有数据表**: users（用户表）
 - **规划中的表**: words（单词表）、user_words（生词本）、review_records（复习记录）、learning_progress（学习进度）
+
+## 项目文件结构
+
+```
+English-words/
+├── English-words.xcodeproj/        # Xcode 项目文件
+├── English-words/                  # 主应用代码
+│   ├── English_wordsApp.swift      # 应用入口
+│   ├── ContentView.swift           # 根视图
+│   ├── Views/                      # 视图层
+│   │   ├── Auth/                   # 认证相关视图
+│   │   │   ├── LoginView.swift
+│   │   │   └── RegisterView.swift
+│   │   └── Components/             # 可复用组件
+│   │       ├── CustomTextField.swift
+│   │       ├── GradientButton.swift
+│   │       └── GradientBackground.swift
+│   ├── Services/                   # 服务层
+│   │   └── NetworkManager.swift    # 网络请求管理
+│   ├── Animations/                 # 动画相关
+│   │   ├── LottieView.swift
+│   │   └── LottieAnimationManager.swift
+│   ├── Resources/                  # 资源文件
+│   │   ├── AppColors.swift
+│   │   └── AppStrings.swift
+│   └── Extensions/                 # 扩展
+│       └── UIImage+Extensions.swift
+├── English-wordsTests/              # 单元测试
+└── English-wordsUITests/            # UI 测试
+```
