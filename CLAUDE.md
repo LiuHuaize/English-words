@@ -15,6 +15,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **主要依赖**: 
   - Lottie (通过 Swift Package Manager) - 动画库
 - **架构模式**: SwiftUI 声明式 UI + 组件化设计
+- **数据库**: PostgreSQL
+  - 数据库名: `demosql`
+  - 本地开发环境使用
 
 ## 常用开发命令
 
@@ -125,3 +128,13 @@ xcodebuild test -scheme English-words -destination 'platform=iOS Simulator,name=
 ### 项目依赖管理
 - 当前通过 Swift Package Manager 管理 Lottie
 - 添加新依赖时使用 Xcode 的 Package Dependencies 界面
+
+## 数据库架构
+
+详细的数据库设计和表结构请参考 [数据库.md](./数据库.md) 文档。
+
+### 快速参考
+- **数据库类型**: PostgreSQL
+- **数据库名**: `demosql`
+- **现有数据表**: users（用户表）
+- **规划中的表**: words（单词表）、user_words（生词本）、review_records（复习记录）、learning_progress（学习进度）
