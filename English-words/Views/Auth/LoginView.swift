@@ -22,14 +22,22 @@ struct LoginView: View {
                 VStack(spacing: 0) {
                     headerSection
                     
-                    VStack(spacing: 25) {
+                    // 使用固定高度的容器包裹动画，防止缩放影响布局
+                    ZStack {
+                        Color.clear
+                            .frame(height: 130) // 调整容器高度以适应更小的动画
+                        
                         animationSection
+                    }
+                    
+                    VStack(spacing: 25) {
                         inputSection
                         loginButton
                         registerLink
                     }
                     .frame(maxWidth: 380)
                     .padding(.horizontal, 24)
+                    .padding(.top, 20) // 添加顶部间距
                     
                     Spacer(minLength: 40)
                     
@@ -63,8 +71,8 @@ struct LoginView: View {
     
     private var animationSection: some View {
         LottieView(animation: .girlStudyingOnLaptop)
-            .frame(width: 200, height: 200)
-            .padding(.vertical, 10)
+            .frame(width: 200, height: 200) // 保持原始尺寸用于布局
+            .scaleEffect(0.6) // 缩小到60%，更小巧精致
     }
     
     private var inputSection: some View {
