@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		561350262E507013006A78DC /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 561350252E507013006A78DC /* Lottie */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		5613B4B62E504F5F0065549D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -22,6 +26,19 @@
 			remoteInfo = "English-words";
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5613502A2E507018006A78DC /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		5613B4A72E504F5D0065549D /* English-words.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "English-words.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				561350262E507013006A78DC /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,12 +90,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		561350242E507013006A78DC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		5613B49E2E504F5D0065549D = {
 			isa = PBXGroup;
 			children = (
 				5613B4A92E504F5D0065549D /* English-words */,
 				5613B4B82E504F5F0065549D /* English-wordsTests */,
 				5613B4C22E504F5F0065549D /* English-wordsUITests */,
+				561350242E507013006A78DC /* Frameworks */,
 				5613B4A82E504F5D0065549D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -102,6 +128,7 @@
 				5613B4A32E504F5D0065549D /* Sources */,
 				5613B4A42E504F5D0065549D /* Frameworks */,
 				5613B4A52E504F5D0065549D /* Resources */,
+				5613502A2E507018006A78DC /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -112,6 +139,7 @@
 			);
 			name = "English-words";
 			packageProductDependencies = (
+				561350252E507013006A78DC /* Lottie */,
 			);
 			productName = "English-words";
 			productReference = 5613B4A72E504F5D0065549D /* English-words.app */;
@@ -195,6 +223,9 @@
 			);
 			mainGroup = 5613B49E2E504F5D0065549D;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				561350232E506F2F006A78DC /* XCRemoteSwiftPackageReference "lottie-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5613B4A82E504F5D0065549D /* Products */;
 			projectDirPath = "";
@@ -593,6 +624,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		561350232E506F2F006A78DC /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		561350252E507013006A78DC /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 561350232E506F2F006A78DC /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5613B49F2E504F5D0065549D /* Project object */;
 }

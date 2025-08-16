@@ -26,7 +26,7 @@ struct ContentView: View {
     @State private var password: String = ""
     @State private var isAgreed: Bool = false
     @State private var isPasswordVisible: Bool = false
-    @State private var isAnimating: Bool = false
+    @State private var showRegisterView: Bool = false
     
     // 定义所有的文本常量
     let appTitle = "懒人记单词"
@@ -93,46 +93,10 @@ struct ContentView: View {
                     
                     // 主要内容卡片
                     VStack(spacing: 25) {
-                        // 插画图片（无背景框，自然融合）
-                        Group {
-                            if let _ = UIImage(named: "reading") {
-                                Image("reading")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 180, height: 180)
-                                    .scaleEffect(isAnimating ? 1.0 : 0.95)
-                                    .animation(
-                                        Animation.easeInOut(duration: 2.0)
-                                            .repeatForever(autoreverses: true),
-                                        value: isAnimating
-                                    )
-                            }
-                            else if let uiImage = UIImage(contentsOfFile: "/Users/liuhuaize/Desktop/English-words/image/reading.png") {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 180, height: 180)
-                                    .scaleEffect(isAnimating ? 1.0 : 0.95)
-                                    .animation(
-                                        Animation.easeInOut(duration: 2.0)
-                                            .repeatForever(autoreverses: true),
-                                        value: isAnimating
-                                    )
-                            }
-                            else {
-                                ImageAssets.getReadingIllustration()
-                                    .scaleEffect(isAnimating ? 1.0 : 0.95)
-                                    .animation(
-                                        Animation.easeInOut(duration: 2.0)
-                                            .repeatForever(autoreverses: true),
-                                        value: isAnimating
-                                    )
-                            }
-                        }
-                        .padding(.vertical, 10)
-                        .onAppear {
-                            isAnimating = true
-                        }
+                        // Lottie 动画替代原有的静态图片
+                        LottieView(animation: .girlStudyingOnLaptop)
+                            .frame(width: 200, height: 200)
+                            .padding(.vertical, 10)
                         
                         // 输入框区域（带图标的现代设计）
                         VStack(spacing: 16) {
@@ -250,8 +214,7 @@ struct ContentView: View {
                                 .font(.system(size: 14))
                             
                             Button(action: {
-                                // TODO: 实现跳转到注册页面
-                                print("Register button tapped")
+                                showRegisterView = true
                             }) {
                                 Text(registerText)
                                     .foregroundColor(primaryColor)
@@ -332,7 +295,12 @@ struct ContentView: View {
         }
         .onTapGesture {
             // 点击空白处收起键盘
+            #if os(iOS)
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            #endif
+        }
+        .sheet(isPresented: $showRegisterView) {
+            RegisterView(isPresented: $showRegisterView)
         }
     }
 }
