@@ -25,9 +25,12 @@ struct ContentView: View {
     @State private var username: String = ""
     @State private var password: String = ""
     @State private var isAgreed: Bool = false
+    @State private var isPasswordVisible: Bool = false
+    @State private var isAnimating: Bool = false
     
     // 定义所有的文本常量
     let appTitle = "懒人记单词"
+    let appSubtitle = "让学习变得简单有趣"
     let usernamePlaceholder = "请输入用户名"
     let passwordPlaceholder = "请输入密码"
     let loginButtonText = "登录"
@@ -38,136 +41,259 @@ struct ContentView: View {
     let andText = "和"
     let privacyPolicyText = "《隐私政策》"
     
+    // 定义颜色方案
+    let primaryColor = Color(red: 0.25, green: 0.47, blue: 0.99) // 主题蓝色
+    let secondaryColor = Color(red: 0.45, green: 0.65, blue: 1.0) // 浅蓝色
+    let accentColor = Color(red: 0.96, green: 0.56, blue: 0.35) // 橙色点缀
+    let backgroundColor = Color(red: 0.97, green: 0.98, blue: 1.0) // 淡蓝灰背景
+    
     var body: some View {
         ZStack {
-            // 背景颜色
-            #if os(iOS)
-            Color(UIColor.systemBackground)
-                .ignoresSafeArea()
-            #else
-            Color(NSColor.windowBackgroundColor)
-                .ignoresSafeArea()
-            #endif
+            // 渐变背景
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    backgroundColor,
+                    Color.white,
+                    backgroundColor.opacity(0.3)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            // 装饰性圆形背景
+            GeometryReader { geometry in
+                Circle()
+                    .fill(primaryColor.opacity(0.05))
+                    .frame(width: geometry.size.width * 1.2, height: geometry.size.width * 1.2)
+                    .position(x: geometry.size.width * 0.1, y: -geometry.size.width * 0.2)
+                
+                Circle()
+                    .fill(secondaryColor.opacity(0.03))
+                    .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
+                    .position(x: geometry.size.width * 0.9, y: geometry.size.height * 1.1)
+            }
             
             ScrollView {
                 VStack(spacing: 0) {
-                    // 顶部导航标题
-                    Text(appTitle)
-                        .font(.system(size: 34, weight: .bold))
-                        .padding(.top, 60)
-                        .padding(.bottom, 50)
+                    // 顶部标题区域
+                    VStack(spacing: 8) {
+                        Text(appTitle)
+                            .font(.system(size: 36, weight: .bold, design: .rounded))
+                            .foregroundColor(primaryColor)
+                            .shadow(color: primaryColor.opacity(0.2), radius: 2, x: 0, y: 2)
+                        
+                        Text(appSubtitle)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(Color.gray)
+                            .opacity(0.8)
+                    }
+                    .padding(.top, 50)
+                    .padding(.bottom, 30)
                     
-                    // 中间内容区域容器
-                    VStack(spacing: 20) {
-                        // 插画图片容器
+                    // 主要内容卡片
+                    VStack(spacing: 25) {
+                        // 插画图片（无背景框，自然融合）
                         Group {
-                            // 方式1: 从Assets.xcassets加载（推荐）
                             if let _ = UIImage(named: "reading") {
                                 Image("reading")
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 200, height: 200)
-                                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                                    .frame(width: 180, height: 180)
+                                    .scaleEffect(isAnimating ? 1.0 : 0.95)
+                                    .animation(
+                                        Animation.easeInOut(duration: 2.0)
+                                            .repeatForever(autoreverses: true),
+                                        value: isAnimating
+                                    )
                             }
-                            // 方式2: 从文件路径加载
                             else if let uiImage = UIImage(contentsOfFile: "/Users/liuhuaize/Desktop/English-words/image/reading.png") {
                                 Image(uiImage: uiImage)
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 200, height: 200)
-                                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                                    .frame(width: 180, height: 180)
+                                    .scaleEffect(isAnimating ? 1.0 : 0.95)
+                                    .animation(
+                                        Animation.easeInOut(duration: 2.0)
+                                            .repeatForever(autoreverses: true),
+                                        value: isAnimating
+                                    )
                             }
-                            // 方式3: 使用自定义绘制的备用插画
                             else {
                                 ImageAssets.getReadingIllustration()
+                                    .scaleEffect(isAnimating ? 1.0 : 0.95)
+                                    .animation(
+                                        Animation.easeInOut(duration: 2.0)
+                                            .repeatForever(autoreverses: true),
+                                        value: isAnimating
+                                    )
                             }
                         }
-                        .padding(.bottom, 20)
+                        .padding(.vertical, 10)
+                        .onAppear {
+                            isAnimating = true
+                        }
                         
-                        // 输入框容器
-                        VStack(spacing: 15) {
+                        // 输入框区域（带图标的现代设计）
+                        VStack(spacing: 16) {
                             // 用户名输入框
-                            TextField(usernamePlaceholder, text: $username)
-                                .padding()
-                                .frame(height: 50)
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(10)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
-                                )
-                                .font(.system(size: 16))
+                            HStack(spacing: 12) {
+                                Image(systemName: "person.fill")
+                                    .foregroundColor(primaryColor.opacity(0.7))
+                                    .font(.system(size: 18))
+                                    .frame(width: 20)
+                                
+                                TextField(usernamePlaceholder, text: $username)
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.primary)
+                                
+                                if !username.isEmpty {
+                                    Button(action: {
+                                        username = ""
+                                    }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundColor(Color.gray.opacity(0.5))
+                                            .font(.system(size: 16))
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.white)
+                                    .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(username.isEmpty ? Color.clear : primaryColor.opacity(0.3), lineWidth: 1)
+                            )
                             
                             // 密码输入框
-                            SecureField(passwordPlaceholder, text: $password)
-                                .padding()
-                                .frame(height: 50)
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(10)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
-                                )
-                                .font(.system(size: 16))
+                            HStack(spacing: 12) {
+                                Image(systemName: "lock.fill")
+                                    .foregroundColor(primaryColor.opacity(0.7))
+                                    .font(.system(size: 18))
+                                    .frame(width: 20)
+                                
+                                if isPasswordVisible {
+                                    TextField(passwordPlaceholder, text: $password)
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.primary)
+                                } else {
+                                    SecureField(passwordPlaceholder, text: $password)
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.primary)
+                                }
+                                
+                                if !password.isEmpty {
+                                    Button(action: {
+                                        isPasswordVisible.toggle()
+                                    }) {
+                                        Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
+                                            .foregroundColor(Color.gray.opacity(0.5))
+                                            .font(.system(size: 16))
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.white)
+                                    .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(password.isEmpty ? Color.clear : primaryColor.opacity(0.3), lineWidth: 1)
+                            )
                         }
                         
-                        // 登录按钮
+                        // 登录按钮（渐变效果）
                         Button(action: {
                             // TODO: 实现登录功能
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                // 添加按钮点击动画反馈
+                            }
                             print("Login button tapped")
                         }) {
-                            Text(loginButtonText)
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 50)
-                                .background(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Color.blue, Color.blue.opacity(0.8)]),
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
+                            HStack {
+                                Text(loginButtonText)
+                                    .font(.system(size: 17, weight: .semibold))
+                                    .foregroundColor(.white)
+                                
+                                Image(systemName: "arrow.right.circle.fill")
+                                    .font(.system(size: 18))
+                                    .foregroundColor(.white.opacity(0.9))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [primaryColor, secondaryColor]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
                                 )
-                                .cornerRadius(10)
-                                .shadow(color: Color.blue.opacity(0.3), radius: 5, x: 0, y: 3)
+                            )
+                            .cornerRadius(12)
+                            .shadow(color: primaryColor.opacity(0.3), radius: 12, x: 0, y: 6)
                         }
-                        .padding(.top, 10)
+                        .scaleEffect(isAgreed ? 1.0 : 0.97)
+                        .animation(.spring(response: 0.3), value: isAgreed)
+                        .disabled(!isAgreed)
+                        .opacity(isAgreed ? 1.0 : 0.6)
                         
-                        // 注册链接
-                        HStack {
+                        // 注册链接（更优雅的设计）
+                        HStack(spacing: 4) {
                             Text(noAccountText)
-                                .foregroundColor(Color.gray)
+                                .foregroundColor(Color.gray.opacity(0.8))
                                 .font(.system(size: 14))
+                            
                             Button(action: {
                                 // TODO: 实现跳转到注册页面
                                 print("Register button tapped")
                             }) {
                                 Text(registerText)
-                                    .foregroundColor(.blue)
-                                    .font(.system(size: 14))
+                                    .foregroundColor(primaryColor)
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .underline()
                             }
                         }
                         .padding(.top, 5)
                     }
-                    .frame(maxWidth: 500) // 固定最大宽度
-                    .padding(.horizontal, 30)
+                    .frame(maxWidth: 380)
+                    .padding(.horizontal, 24)
                     
-                    Spacer(minLength: 50)
+                    Spacer(minLength: 40)
                     
-                    // 底部用户协议和隐私政策
-                    VStack(spacing: 10) {
-                        HStack(spacing: 5) {
+                    // 底部协议区域（更紧凑的设计）
+                    VStack(spacing: 12) {
+                        HStack(spacing: 6) {
                             Button(action: {
-                                isAgreed.toggle()
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    isAgreed.toggle()
+                                }
                             }) {
-                                Image(systemName: isAgreed ? "checkmark.square.fill" : "square")
-                                    .foregroundColor(isAgreed ? .blue : Color.gray.opacity(0.5))
-                                    .font(.system(size: 18))
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .fill(isAgreed ? primaryColor : Color.clear)
+                                        .frame(width: 20, height: 20)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .stroke(isAgreed ? primaryColor : Color.gray.opacity(0.4), lineWidth: 1.5)
+                                        )
+                                    
+                                    if isAgreed {
+                                        Image(systemName: "checkmark")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundColor(.white)
+                                    }
+                                }
                             }
                             
                             Text(agreementText)
                                 .font(.system(size: 12))
-                                .foregroundColor(Color.gray)
+                                .foregroundColor(Color.gray.opacity(0.7))
                             
                             Button(action: {
                                 // TODO: 打开用户协议
@@ -175,12 +301,12 @@ struct ContentView: View {
                             }) {
                                 Text(userAgreementText)
                                     .font(.system(size: 12))
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(primaryColor)
                             }
                             
                             Text(andText)
                                 .font(.system(size: 12))
-                                .foregroundColor(Color.gray)
+                                .foregroundColor(Color.gray.opacity(0.7))
                             
                             Button(action: {
                                 // TODO: 打开隐私政策
@@ -188,13 +314,25 @@ struct ContentView: View {
                             }) {
                                 Text(privacyPolicyText)
                                     .font(.system(size: 12))
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(primaryColor)
                             }
                         }
+                        
+                        if !isAgreed {
+                            Text("请先同意用户协议和隐私政策")
+                                .font(.system(size: 11))
+                                .foregroundColor(accentColor)
+                                .transition(.opacity)
+                        }
                     }
-                    .padding(.bottom, 40)
+                    .padding(.bottom, 30)
+                    .animation(.easeInOut, value: isAgreed)
                 }
             }
+        }
+        .onTapGesture {
+            // 点击空白处收起键盘
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
     }
 }
@@ -202,5 +340,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-
-
