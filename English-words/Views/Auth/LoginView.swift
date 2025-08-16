@@ -13,6 +13,10 @@ struct LoginView: View {
     @State private var isAgreed: Bool = false
     @State private var isPasswordVisible: Bool = false
     @State private var showRegisterView: Bool = false
+    @State private var isLoggingIn: Bool = false
+    @State private var statusMessage: String = ""
+    @State private var showStatusMessage: Bool = false
+    @State private var isStatusSuccess: Bool = false
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -45,6 +49,10 @@ struct LoginView: View {
         isIPad ? 100 : 50
     }
     
+    private var canLogin: Bool {
+        !username.isEmpty && !password.isEmpty && isAgreed
+    }
+    
     var body: some View {
         ZStack {
             GradientBackground()
@@ -63,6 +71,24 @@ struct LoginView: View {
                         }
                         
                         VStack(spacing: isIPad ? 35 : 25) {
+                            // 状态提示信息
+                            if showStatusMessage {
+                                HStack(spacing: 8) {
+                                    Image(systemName: isStatusSuccess ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                                        .font(.system(size: isIPad ? 16 : 14))
+                                    Text(statusMessage)
+                                        .font(.system(size: 14, weight: .medium))
+                                }
+                                .foregroundColor(isStatusSuccess ? .green : AppColors.accent)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(isStatusSuccess ? Color.green.opacity(0.1) : AppColors.accent.opacity(0.1))
+                                )
+                                .transition(.scale.combined(with: .opacity))
+                            }
+                            
                             inputSection
                             loginButton
                             registerLink
@@ -132,7 +158,8 @@ struct LoginView: View {
         GradientButton(
             title: AppStrings.Login.loginButton,
             icon: "arrow.right.circle.fill",
-            isEnabled: isAgreed,
+            isEnabled: canLogin && !isLoggingIn,
+            isLoading: isLoggingIn,
             action: {
                 handleLogin()
             }
@@ -219,8 +246,59 @@ struct LoginView: View {
     }
     
     private func handleLogin() {
-        print("Login with username: \(username)")
-        // TODO: 实现登录逻辑
+        guard canLogin else {
+            showMessage("请填写用户名和密码，并同意用户协议", isSuccess: false)
+            return
+        }
+        
+        withAnimation {
+            isLoggingIn = true
+            showStatusMessage = false
+        }
+        
+        Task {
+            do {
+                let user = try await NetworkManager.shared.login(
+                    username: username,
+                    password: password
+                )
+                
+                await MainActor.run {
+                    withAnimation {
+                        isLoggingIn = false
+                    }
+                    showMessage("登录成功！欢迎回来，\(user.username)！", isSuccess: true)
+                    
+                    // TODO: 导航到主页面
+                    // 这里应该更新 ContentView 中的登录状态
+                }
+            } catch {
+                await MainActor.run {
+                    withAnimation {
+                        isLoggingIn = false
+                    }
+                    
+                    // 显示错误信息
+                    let errorMessage = error.localizedDescription
+                    showMessage(errorMessage, isSuccess: false)
+                }
+            }
+        }
+    }
+    
+    private func showMessage(_ message: String, isSuccess: Bool) {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            statusMessage = message
+            isStatusSuccess = isSuccess
+            showStatusMessage = true
+        }
+        
+        // 5秒后自动隐藏提示信息
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                showStatusMessage = false
+            }
+        }
     }
     
     private func openUserAgreement() {
