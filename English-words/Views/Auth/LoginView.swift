@@ -107,6 +107,25 @@ struct LoginView: View {
                 }
             }
         }
+        .overlay(alignment: .topTrailing) {
+            // Skip 按钮 - 仅用于测试
+            Button(action: {
+                handleSkip()
+            }) {
+                Text("Skip")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(AppColors.primary)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(
+                        Capsule()
+                            .fill(Color.white.opacity(0.9))
+                            .shadow(color: AppColors.primary.opacity(0.2), radius: 5, x: 0, y: 2)
+                    )
+            }
+            .padding(.top, isIPad ? 60 : 50)
+            .padding(.trailing, isIPad ? 30 : 20)
+        }
         .onTapGesture {
             dismissKeyboard()
         }
@@ -318,6 +337,14 @@ struct LoginView: View {
     
     private func dismissKeyboard() {
         // 使用 SwiftUI 的方式隐藏键盘
+    }
+    
+    private func handleSkip() {
+        // 测试用 - 直接跳过登录
+        print("Skipping login for testing")
+        withAnimation {
+            isLoggedIn = true
+        }
     }
 }
 

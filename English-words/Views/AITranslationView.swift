@@ -5,7 +5,7 @@ struct AITranslationView: View {
         NavigationStack {
             ZStack {
                 // 背景色
-                Color(UIColor.systemBackground)
+                Color(.systemBackground)
                     .ignoresSafeArea()
                 
                 VStack {

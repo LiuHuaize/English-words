@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 import Lottie
 
 // 通用的 Lottie 动画视图
