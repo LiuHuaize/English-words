@@ -12,10 +12,10 @@ struct ContentView: View {
     
     var body: some View {
         if isLoggedIn {
-            // 显示AI翻译界面
-            AITranslationView()
+            // 显示主Tab导航界面
+            MainTabView()
                 .onAppear {
-                    print("User logged in, showing AI Translation view")
+                    print("User logged in, showing Main Tab view")
                 }
         } else {
             LoginView(isLoggedIn: $isLoggedIn)
