@@ -5,6 +5,7 @@ struct AITranslationView: View {
     @State private var searchText = ""
     @State private var isWordSaved = false
     @State private var isPlaying = false
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     var body: some View {
         NavigationStack {
@@ -29,25 +30,30 @@ struct AITranslationView: View {
                         VStack(spacing: 20) {
                             // 单词卡片（现在跟随滚动）
                             wordCard
-                                .padding(.horizontal, screenWidth * 0.075)
+                                .padding(.horizontal, contentHorizontalPadding)
                                 .padding(.top, 10)
+                                .frame(maxWidth: maxContentWidth)
                             
                             // AI解读部分
                             aiInterpretationSection
-                                .padding(.horizontal, screenWidth * 0.075)
+                                .padding(.horizontal, contentHorizontalPadding)
+                                .frame(maxWidth: maxContentWidth)
                             
                             // 趣味记忆部分
                             interestingMemorySection
-                                .padding(.horizontal, screenWidth * 0.075)
+                                .padding(.horizontal, contentHorizontalPadding)
+                                .frame(maxWidth: maxContentWidth)
                             
                             // 释义与例句部分
                             definitionAndExampleSection
-                                .padding(.horizontal, screenWidth * 0.075)
+                                .padding(.horizontal, contentHorizontalPadding)
+                                .frame(maxWidth: maxContentWidth)
                             
                             // 底部安全区域
                             Color.clear
                                 .frame(height: 100)
                         }
+                        .frame(maxWidth: .infinity)
                     }
                 }
             }
@@ -77,8 +83,10 @@ struct AITranslationView: View {
                     .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
             }
         }
-        .padding(.horizontal, screenWidth * 0.075)
+        .padding(.horizontal, contentHorizontalPadding)
         .padding(.vertical, 12)
+        .frame(maxWidth: maxContentWidth)
+        .frame(maxWidth: .infinity)
         .background(Color.clear)
     }
     
@@ -158,7 +166,6 @@ struct AITranslationView: View {
                 .font(.system(size: 15))
                 .foregroundColor(Color(red: 0.4, green: 0.2, blue: 0.6))
                 .lineSpacing(6)
-                .padding(.horizontal, 4)
         }
     }
     
@@ -178,7 +185,6 @@ struct AITranslationView: View {
                     .foregroundColor(.black.opacity(0.7))
                     .lineSpacing(6)
             }
-            .padding(.horizontal, 4)
         }
     }
     
@@ -220,26 +226,50 @@ struct AITranslationView: View {
                         .foregroundColor(.gray)
                 }
             }
-            .padding(.horizontal, 4)
         }
     }
     
     // 章节标题样式
     private func sectionTitle(_ title: String) -> some View {
-        Text(title)
-            .font(.system(size: 16, weight: .semibold))
-            .foregroundColor(.white)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(
-                Color(red: 0.3, green: 0.6, blue: 0.9)
-                    .cornerRadius(12)
-            )
+        HStack {
+            Text(title)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.white)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(
+                    Color(red: 0.3, green: 0.6, blue: 0.9)
+                        .cornerRadius(12)
+                )
+            Spacer()
+        }
     }
     
     // 获取屏幕宽度
     private var screenWidth: CGFloat {
         UIScreen.main.bounds.width
+    }
+    
+    // 根据设备类型动态计算内容宽度
+    private var maxContentWidth: CGFloat {
+        if horizontalSizeClass == .regular {
+            // iPad 或大屏设备 - 限制最大宽度以保持可读性
+            return min(screenWidth, 800)
+        } else {
+            // iPhone - 使用全宽
+            return screenWidth
+        }
+    }
+    
+    // 动态计算水平内边距
+    private var contentHorizontalPadding: CGFloat {
+        if horizontalSizeClass == .regular {
+            // iPad - 使用固定内边距
+            return 24
+        } else {
+            // iPhone - 根据屏幕宽度计算
+            return screenWidth * 0.05
+        }
     }
 }
 
