@@ -27,11 +27,11 @@ struct AITranslationView: View {
                     
                     // 主内容区域 - 所有内容都在ScrollView中
                     ScrollView {
-                        VStack(spacing: 20) {
+                        VStack(spacing: sectionSpacing) {
                             // 单词卡片（现在跟随滚动）
                             wordCard
                                 .padding(.horizontal, contentHorizontalPadding)
-                                .padding(.top, 10)
+                                .padding(.top, topPadding)
                                 .frame(maxWidth: maxContentWidth)
                             
                             // AI解读部分
@@ -51,7 +51,7 @@ struct AITranslationView: View {
                             
                             // 底部安全区域
                             Color.clear
-                                .frame(height: 100)
+                                .frame(height: bottomSafeAreaHeight)
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -269,6 +269,39 @@ struct AITranslationView: View {
         } else {
             // iPhone - 根据屏幕宽度计算
             return screenWidth * 0.05
+        }
+    }
+    
+    // 动态计算各部分之间的垂直间距
+    private var sectionSpacing: CGFloat {
+        if horizontalSizeClass == .regular {
+            // iPad - 更大的间距，提供更好的视觉层次
+            return 36
+        } else {
+            // iPhone - 适中的间距
+            return 20
+        }
+    }
+    
+    // 动态计算顶部内边距
+    private var topPadding: CGFloat {
+        if horizontalSizeClass == .regular {
+            // iPad - 更大的顶部空间
+            return 24
+        } else {
+            // iPhone - 较小的顶部空间
+            return 10
+        }
+    }
+    
+    // 动态计算底部安全区域高度
+    private var bottomSafeAreaHeight: CGFloat {
+        if horizontalSizeClass == .regular {
+            // iPad - 更大的底部空间
+            return 120
+        } else {
+            // iPhone - 标准底部空间
+            return 100
         }
     }
 }
