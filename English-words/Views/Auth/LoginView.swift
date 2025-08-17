@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
+    @Binding var isLoggedIn: Bool
     @State private var username: String = ""
     @State private var password: String = ""
     @State private var isAgreed: Bool = false
@@ -269,8 +270,12 @@ struct LoginView: View {
                     }
                     showMessage("登录成功！欢迎回来，\(user.username)！", isSuccess: true)
                     
-                    // TODO: 导航到主页面
-                    // 这里应该更新 ContentView 中的登录状态
+                    // 延迟一下让用户看到成功提示，然后跳转
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        withAnimation {
+                            isLoggedIn = true
+                        }
+                    }
                 }
             } catch {
                 await MainActor.run {
@@ -314,4 +319,8 @@ struct LoginView: View {
     private func dismissKeyboard() {
         // 使用 SwiftUI 的方式隐藏键盘
     }
+}
+
+#Preview {
+    LoginView(isLoggedIn: .constant(false))
 }

@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isLoggedIn: Bool = false
+    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     
     var body: some View {
         if isLoggedIn {
-            // TODO: 显示主应用界面
-            Text("主应用界面")
+            // 显示AI翻译界面
+            AITranslationView()
                 .onAppear {
-                    print("User logged in, showing main app")
+                    print("User logged in, showing AI Translation view")
                 }
         } else {
-            LoginView()
+            LoginView(isLoggedIn: $isLoggedIn)
         }
     }
 }
